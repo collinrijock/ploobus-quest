@@ -7,7 +7,7 @@
 
 var Class = require('../../../utils/Class');
 var GetFastValue = require('../../../utils/object/GetFastValue');
-var LightShaderSourceFS = require('../shaders/Light-frag.js');
+var LightShaderSourceFS = require('../shaders/Light-frag');
 var MultiPipeline = require('./MultiPipeline');
 var TransformMatrix = require('../../../gameobjects/components/TransformMatrix');
 var Vec2 = require('../../../math/Vector2');
@@ -292,6 +292,13 @@ var LightPipeline = new Class({
             rotation = gameObject.rotation;
         }
 
+        if (this.currentBatch === null)
+        {
+            this.createBatch(texture);
+
+            this.addTextureToBatch(normalMap);
+        }
+
         this.setNormalMapRotation(rotation);
 
         return 0;
@@ -337,6 +344,13 @@ var LightPipeline = new Class({
         else
         {
             this.setNormalMapRotation(gameObject.rotation);
+        }
+
+        if (this.currentBatch === null)
+        {
+            this.createBatch(texture);
+
+            this.addTextureToBatch(normalMap);
         }
 
         return 0;

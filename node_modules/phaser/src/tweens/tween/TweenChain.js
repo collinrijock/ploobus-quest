@@ -89,8 +89,6 @@ var TweenChain = new Class({
             this.setActiveState();
         }
 
-        this.dispatchEvent(Events.TWEEN_ACTIVE, 'onActive');
-
         return this;
     },
 
@@ -251,7 +249,7 @@ var TweenChain = new Class({
     },
 
     /**
-     * Re-initiases the given Tween and sets it to the Active state.
+     * Re-initialises the given Tween and sets it to the Active state.
      *
      * @method Phaser.Tweens.TweenChain#makeActive
      * @since 3.60.0
@@ -376,8 +374,7 @@ var TweenChain = new Class({
             data[i].reset(false);
         }
 
-        this.currentIndex = 0;
-        this.currentTween = data[0];
+        this.setCurrentTween(0);
     },
 
     /**
@@ -404,7 +401,7 @@ var TweenChain = new Class({
             return false;
         }
 
-        //  The TweehChain.timeScale is applied within Tween.update, so doesn't need including here
+        //  The TweenChain.timeScale is applied within Tween.update, so doesn't need including here
         delta *= this.parent.timeScale;
 
         if (this.isLoopDelayed())
@@ -427,14 +424,14 @@ var TweenChain = new Class({
         {
             if (this.currentTween.update(delta))
             {
-                //  This tween has finshed playback, so move to the next one
+                //  This tween has finished playback, so move to the next one
                 if (this.nextTween())
                 {
                     this.nextState();
                 }
             }
 
-            //  if nextState called onCompleteHandler then we're ready to be removed, unless we persist
+            //  If nextState called onCompleteHandler then it is ready to be removed, unless persist is set to true
             remove = this.isPendingRemove();
 
             if (remove && this.persist)
@@ -491,8 +488,6 @@ var TweenChain = new Class({
         this.currentTween = this.data[index];
 
         this.currentTween.setActiveState();
-
-        this.currentTween.dispatchEvent(Events.TWEEN_ACTIVE, 'onActive');
     },
 
     /**

@@ -164,7 +164,7 @@ var RenderTarget = new Class({
 
         if (autoResize)
         {
-            this.setAutoResize(true);
+            this.renderer.on(Events.RESIZE, this.resize, this);
         }
         else
         {
@@ -203,12 +203,16 @@ var RenderTarget = new Class({
     },
 
     /**
-     * Resizes this Render Target.
+     * Resizes this Render Target as long as the given width and height are different
+     * to the current width and height.
      *
      * Deletes both the frame buffer and texture, if they exist and then re-creates
      * them using the new sizes.
      *
      * This method is called automatically by the pipeline during its resize handler.
+     * 
+     * Previous to Phaser v3.85 this method would only run if `autoResize` was `true`,
+     * it will now run regardless.
      *
      * @method Phaser.Renderer.WebGL.RenderTarget#resize
      * @since 3.50.0
@@ -220,20 +224,7 @@ var RenderTarget = new Class({
      */
     resize: function (width, height)
     {
-        width = Math.round(width * this.scale);
-        height = Math.round(height * this.scale);
-
-        if (width <= 0)
-        {
-            width = 1;
-        }
-
-        if (height <= 0)
-        {
-            height = 1;
-        }
-
-        if (this.autoResize && (width !== this.width || height !== this.height))
+        if (this.willResize(width, height))
         {
             var renderer = this.renderer;
 
@@ -348,19 +339,33 @@ var RenderTarget = new Class({
     },
 
     /**
-     * Clears this Render Target.
+     * Clears a portion or everything from this Render Target. To clear an area,
+     * specify the `x`, `y`, `width` and `height`.
+     * 
+     * @param {number} [x=0] - The left coordinate of the fill rectangle.
+     * @param {number} [y=0] - The top coordinate of the fill rectangle.
+     * @param {number} [width=this.width] - The width of the fill rectangle.
+     * @param {number} [height=this.height] - The height of the fill rectangle.
      *
      * @method Phaser.Renderer.WebGL.RenderTarget#clear
      * @since 3.50.0
      */
-    clear: function ()
+    clear: function (x, y, width, height)
     {
         var renderer = this.renderer;
         var gl = renderer.gl;
 
         renderer.pushFramebuffer(this.framebuffer);
 
-        gl.disable(gl.SCISSOR_TEST);
+        if (x !== undefined && y !== undefined && width !== undefined && height !== undefined)
+        {
+            gl.enable(gl.SCISSOR_TEST);
+            gl.scissor(x, y, width, height);
+        }
+        else
+        {
+            gl.disable(gl.SCISSOR_TEST);
+        }
 
         gl.clearColor(0, 0, 0, 0);
 

@@ -5,7 +5,7 @@
  */
 
 var BlendModes = require('../renderer/BlendModes');
-var Camera = require('../cameras/2d/BaseCamera');
+var Camera = require('../cameras/2d/Camera');
 var CanvasPool = require('../display/canvas/CanvasPool');
 var Class = require('../utils/Class');
 var CONST = require('../const');
@@ -197,7 +197,7 @@ var DynamicTexture = new Class({
          * You can scroll, zoom and rotate this Camera.
          *
          * @name Phaser.Textures.DynamicTexture#camera
-         * @type {Phaser.Cameras.Scene2D.BaseCamera}
+         * @type {Phaser.Cameras.Scene2D.Camera}
          * @since 3.12.0
          */
         this.camera = new Camera(0, 0, width, height).setScene(manager.game.scene.systemScene, false);
@@ -213,7 +213,7 @@ var DynamicTexture = new Class({
          * @type {Phaser.Renderer.WebGL.RenderTarget}
          * @since 3.60.0
          */
-        this.renderTarget = (!isCanvas) ? new RenderTarget(renderer, width, height, 1, 0, false, true, true, false) : null;
+        this.renderTarget = (!isCanvas) ? new RenderTarget(renderer, width, height, 1, 0, false, false, true, false) : null;
 
         /**
          * A reference to the WebGL Single Pipeline.
@@ -431,36 +431,48 @@ var DynamicTexture = new Class({
     },
 
     /**
-     * Fully clears this Dynamic Texture, erasing everything from it and resetting it back to
-     * a blank, transparent, texture.
-     *
+     * Clears a portion or everything from this Dynamic Texture by erasing it and resetting it back to
+     * a blank, transparent, texture. To clear an area, specify the `x`, `y`, `width` and `height`.
      * @method Phaser.Textures.DynamicTexture#clear
      * @since 3.2.0
      *
+     * @param {number} [x=0] - The left coordinate of the fill rectangle.
+     * @param {number} [y=0] - The top coordinate of the fill rectangle.
+     * @param {number} [width=this.width] - The width of the fill rectangle.
+     * @param {number} [height=this.height] - The height of the fill rectangle.
+     * 
      * @return {this} This Dynamic Texture instance.
      */
-    clear: function ()
+    clear: function (x, y, width, height)
     {
         if (this.dirty)
         {
             var ctx = this.context;
+            
             var renderTarget = this.renderTarget;
 
             if (renderTarget)
             {
-                renderTarget.clear();
+                renderTarget.clear(x, y, width, height);
             }
             else if (ctx)
             {
-                ctx.save();
-                ctx.setTransform(1, 0, 0, 1, 0, 0);
-                ctx.clearRect(0, 0, this.width, this.height);
-                ctx.restore();
+                if (x !== undefined && y !== undefined && width !== undefined && height !== undefined)
+                {
+                    ctx.clearRect(x, y, width, height);
+                }
+                else
+                {
+                    ctx.save();
+                    ctx.setTransform(1, 0, 0, 1, 0, 0);
+                    ctx.clearRect(0, 0, this.width, this.height);
+                    ctx.restore();
+                }
             }
 
             this.dirty = false;
         }
-
+        
         return this;
     },
 

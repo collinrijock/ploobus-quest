@@ -7,8 +7,8 @@
 var Class = require('../../../utils/Class');
 var ColorMatrix = require('../../../display/ColorMatrix');
 var GetFastValue = require('../../../utils/object/GetFastValue');
-var ShaderSourceFS = require('../shaders/PostFX-frag.js');
-var ShaderSourceVS = require('../shaders/Quad-vert.js');
+var ShaderSourceFS = require('../shaders/PostFX-frag');
+var ShaderSourceVS = require('../shaders/Quad-vert');
 var WebGLPipeline = require('../WebGLPipeline');
 
 /**
@@ -256,7 +256,6 @@ var PostFXPipeline = new Class({
 
         this.set1i('uMainSampler', 0);
         this.set2f('uResolution', renderer.width, renderer.height);
-        this.set1i('uRoundPixels', renderer.config.roundPixels);
 
         var targets = this.renderTargets;
 

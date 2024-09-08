@@ -7,8 +7,8 @@
 var Class = require('../../../utils/Class');
 var GetFastValue = require('../../../utils/object/GetFastValue');
 var MultiPipeline = require('./MultiPipeline');
-var ShaderSourceFS = require('../shaders/Single-frag.js');
-var ShaderSourceVS = require('../shaders/Single-vert.js');
+var ShaderSourceFS = require('../shaders/Single-frag');
+var ShaderSourceVS = require('../shaders/Single-vert');
 var WEBGL_CONST = require('../const');
 var WebGLPipeline = require('../WebGLPipeline');
 
@@ -44,7 +44,6 @@ var WebGLPipeline = require('../WebGLPipeline');
  * The default shader uniforms for this pipeline are:
  *
  * `uProjectionMatrix` (mat4)
- * `uRoundPixels` (int)
  * `uResolution` (vec2)
  * `uMainSampler` (sampler2D, or sampler2D array)
  *
@@ -111,7 +110,6 @@ var MobilePipeline = new Class({
 
         this.set1i('uMainSampler', 0);
         this.set2f('uResolution', renderer.width, renderer.height);
-        this.set1i('uRoundPixels', renderer.config.roundPixels);
     }
 
 });
